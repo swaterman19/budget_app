@@ -215,7 +215,7 @@
     .budget-hint { font-size: 12px; color: var(--gray); }
 
     /* ── Entries ── */
-    .entries-list { list-style: none; }
+    .entries-list { list-style: none; max-height: 420px; overflow-y: auto; }
 
     .entries-list li {
       display: flex;
@@ -527,6 +527,7 @@
         <span id="mic-label">Speak Expense</span>
       </button>
       <div id="mic-result" class="mic-result hidden"></div>
+      <div id="form-error" style="display:none;background:#fef2f2;color:#b91c1c;font-size:13px;font-weight:500;padding:8px 12px;border-radius:8px;margin-bottom:10px;border:1px solid #fecaca"></div>
       <button class="btn-primary" id="btn-add" onclick="addEntry()">
         <span class="spinner" id="add-spinner"></span>
         <span id="btn-add-label">Add Expense</span>
@@ -770,8 +771,10 @@
     const date   = document.getElementById('date').value;
     const cat    = document.getElementById('category').value;
     const desc   = document.getElementById('desc').value.trim();
-    if (!amount || amount <= 0) { toast('Enter a valid amount'); return; }
-    if (!date) { toast('Pick a date'); return; }
+    const formErr = document.getElementById('form-error');
+    if (!amount || amount <= 0) { formErr.textContent = 'Enter a valid amount'; formErr.style.display = 'block'; return; }
+    if (!date) { formErr.textContent = 'Pick a date'; formErr.style.display = 'block'; return; }
+    formErr.style.display = 'none';
 
     setLoading(true);
     try {
@@ -884,14 +887,14 @@
     if (!sorted.length) { ul.innerHTML = '<li class="empty">No entries yet</li>'; return; }
 
     const cats    = getCategories();
-    ul.innerHTML = sorted.slice(0, 50).map(e => {
+    ul.innerHTML = sorted.slice(0, 10).map(e => {
       const ci    = cats.indexOf(e.category);
       const color = CAT_COLORS[ci >= 0 ? ci % CAT_COLORS.length : 0];
       return `<li>
         <div class="entry-accent" style="background:${color}"></div>
         <div class="entry-left">
           <div class="entry-desc">${e.description || e.category}</div>
-          <div class="entry-meta">${e.category} · ${e.date}</div>
+          <div class="entry-meta">${e.category} · ${new Date(e.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
         </div>
         <span class="entry-amount">${fmt(e.amount)}</span>
         <button class="btn-del" onclick="deleteEntry('${e.id}')">×</button>
