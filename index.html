@@ -883,11 +883,11 @@
     }
 
     const ul     = document.getElementById('entries-list');
-    const sorted = [...entries].reverse();
+    const sorted = [...entries].filter(e => e.date && e.date.startsWith(ym)).sort((a, b) => b.date.localeCompare(a.date));
     if (!sorted.length) { ul.innerHTML = '<li class="empty">No entries yet</li>'; return; }
 
     const cats    = getCategories();
-    ul.innerHTML = sorted.slice(0, 10).map(e => {
+    ul.innerHTML = sorted.map(e => {
       const ci    = cats.indexOf(e.category);
       const color = CAT_COLORS[ci >= 0 ? ci % CAT_COLORS.length : 0];
       return `<li>
