@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;800&display=swap" rel="stylesheet">
   <title>Green Track</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -20,7 +21,7 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: #1c1c1e;
       min-height: 100vh;
@@ -29,17 +30,17 @@
 
     /* ── Header ── */
     header {
-      background: #fff;
-      border-bottom: 1px solid var(--border);
+      background: #1a2e1a;
+      border-bottom: none;
       padding: 16px 20px 14px;
       position: sticky;
       top: 0;
       z-index: 10;
     }
 
-    header h1 { font-size: 22px; font-weight: 800; color: #1c1c1e; letter-spacing: -0.3px; }
-    header h1 span { color: var(--green); }
-    header p  { font-size: 13px; color: var(--gray); margin-top: 2px; }
+    header h1 { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
+    header h1 span { color: #4ade80; }
+    header p  { font-size: 13px; color: #86efac; margin-top: 2px; }
 
     /* ── Tab panels ── */
     .tab-panel { display: none; }
@@ -222,17 +223,17 @@
     .entries-list li {
       display: flex;
       align-items: center;
-      padding: 11px 0;
+      gap: 12px;
+      padding: 8px 0;
       border-bottom: 1px solid #f2f2f7;
     }
 
     .entries-list li:last-child { border-bottom: none; }
 
-    .entry-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--blue);
-      margin-right: 10px;
+    .entry-accent {
+      width: 3px;
+      height: 38px;
+      border-radius: 0;
       flex-shrink: 0;
     }
 
@@ -251,7 +252,7 @@
     .entry-amount {
       font-size: 15px;
       font-weight: 600;
-      color: var(--red);
+      color: #1c1c1e;
       margin-left: 10px;
       white-space: nowrap;
     }
@@ -502,7 +503,10 @@
   <div class="container">
 
     <div class="card">
-      <h2>Add Expense</h2>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="width:4px;height:26px;background:#4ade80;border-radius:2px;flex-shrink:0"></div>
+        <div style="font-size:18px;font-weight:800;color:#1c1c1e">Add Expense</div>
+      </div>
       <div class="form-row">
         <div style="flex:1">
           <label for="amount">Amount ($)</label>
@@ -532,23 +536,25 @@
       </button>
     </div>
 
-    <div class="card" id="budget-card">
-      <h2>This Month</h2>
-      <div class="budget-row">
+    <div id="budget-card" style="background:#1a2e1a;border-radius:12px;padding:16px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#86efac">This Month</div>
+        <div id="pct-pill" style="display:none;background:#2d4a2d;color:#4ade80;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px">
         <div>
-          <div style="font-size:13px;color:var(--gray)">Spent</div>
-          <div class="spent" id="total">$0.00</div>
+          <div style="font-size:13px;color:#86efac">Spent</div>
+          <div class="spent" id="total" style="color:#fff">$0.00</div>
         </div>
         <div style="text-align:right">
-          <div style="font-size:13px;color:var(--gray)">Budget</div>
-          <div class="limit" id="budget-limit-label">—</div>
+          <div style="font-size:13px;color:#86efac">Budget</div>
+          <div id="budget-limit-label" style="font-size:18px;font-weight:700;color:#4ade80">—</div>
         </div>
       </div>
-      <div class="progress-track" id="progress-track" style="display:none">
+      <div class="progress-track" id="progress-track" style="display:none;background:#2d4a2d">
         <div class="progress-fill" id="progress-fill"></div>
       </div>
-      <div class="budget-hint" id="budget-hint"></div>
-      <div class="sync-label info" id="sync-status">Loading…</div>
+      <div class="budget-hint" id="budget-hint" style="color:#86efac"></div>
     </div>
 
     <div class="card">
@@ -593,6 +599,7 @@
       <div class="connection-status">
         <div class="status-dot" id="conn-dot"></div>
         <span id="conn-label">Not connected</span>
+        <span class="sync-label info" id="sync-status" style="margin-left:auto"></span>
       </div>
       <div class="form-row single" style="margin-bottom:12px">
         <label for="pat-input">Personal Access Token</label>
@@ -661,20 +668,22 @@
   const CSV_HEADER   = 'ID,Date,Amount,Category,Description';
   const API_BASE     = 'https://api.github.com';
 
-  const PAT_KEY      = 'gh_pat';
-  const CACHE_KEY    = 'spending_cache';
-  const BUDGET_KEY   = 'monthly_budget';
-  const CATS_KEY     = 'user_categories';
+  const PAT_KEY           = 'gh_pat';
+  const CACHE_KEY         = 'spending_cache';
+  const SETTINGS_CACHE_KEY = 'settings_cache';
+  const SETTINGS_PATH     = 'data/settings.json';
 
-  const DEFAULT_CATS = ['Food','Transport','Shopping','Entertainment','Health','Bills','Other'];
+  const DEFAULT_CATS = ['Grocery','Restaurant','Gas','Nick','Seneth','Vacation','Activity / Entertainment','Other'];
   const CAT_COLORS   = ['#007aff','#34c759','#ff9500','#ff3b30','#af52de','#5ac8fa','#ffcc00','#ff2d55','#00c7be','#30b0c7'];
 
   // ── Storage helpers ──────────────────────────────────────────────────────────
-  const pat         = ()  => localStorage.getItem(PAT_KEY) || '';
-  const getBudget   = ()  => parseFloat(localStorage.getItem(BUDGET_KEY)) || 0;
-  const getCategories = () => { try { return JSON.parse(localStorage.getItem(CATS_KEY)) || DEFAULT_CATS; } catch { return DEFAULT_CATS; } };
+  const pat           = () => localStorage.getItem(PAT_KEY) || '';
   const cacheEntries  = e  => localStorage.setItem(CACHE_KEY, JSON.stringify(e));
   const cachedEntries = () => { try { return JSON.parse(localStorage.getItem(CACHE_KEY)) || []; } catch { return []; } };
+  const cacheSettings = s  => localStorage.setItem(SETTINGS_CACHE_KEY, JSON.stringify(s));
+  const cachedSettings = () => { try { return JSON.parse(localStorage.getItem(SETTINGS_CACHE_KEY)) || { budget: 0, categories: DEFAULT_CATS }; } catch { return { budget: 0, categories: DEFAULT_CATS }; } };
+  const getBudget      = () => cachedSettings().budget || 0;
+  const getCategories  = () => cachedSettings().categories || DEFAULT_CATS;
 
   // ── GitHub API ────────────────────────────────────────────────────────────────
   async function ghGet() {
@@ -690,6 +699,28 @@
   async function ghPut(content, sha, message) {
     const body = { message, content: btoa(unescape(encodeURIComponent(content))), ...(sha ? { sha } : {}) };
     const res = await fetch(`${API_BASE}/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${CSV_PATH}`, {
+      method: 'PUT',
+      headers: { Authorization: `token ${pat()}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.message || `GitHub ${res.status}`); }
+  }
+
+  // ── GitHub API: settings ─────────────────────────────────────────────────────
+  async function ghGetSettings() {
+    const res = await fetch(`${API_BASE}/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${SETTINGS_PATH}`, {
+      headers: { Authorization: `token ${pat()}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (res.status === 404) return { settings: { budget: 0, categories: DEFAULT_CATS }, sha: null };
+    if (!res.ok) throw new Error(`GitHub ${res.status}`);
+    const data = await res.json();
+    const text = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+    return { settings: JSON.parse(text), sha: data.sha };
+  }
+
+  async function ghPutSettings(settings, sha, message) {
+    const body = { message, content: btoa(unescape(encodeURIComponent(JSON.stringify(settings, null, 2)))), ...(sha ? { sha } : {}) };
+    const res = await fetch(`${API_BASE}/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${SETTINGS_PATH}`, {
       method: 'PUT',
       headers: { Authorization: `token ${pat()}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
@@ -797,10 +828,12 @@
     setSyncStatus('Loading…', 'info');
     render(cachedEntries());
     try {
-      const { content } = await ghGet();
+      const [{ content }, { settings }] = await Promise.all([ghGet(), ghGetSettings()]);
       const entries = parseCSV(content);
       cacheEntries(entries);
+      cacheSettings(settings);
       render(entries);
+      rebuildCategorySelect();
       setSyncStatus('Synced ✓', 'ok');
     } catch (err) {
       setSyncStatus('Load failed: ' + err.message, 'error');
@@ -829,17 +862,20 @@
     const limLbl = document.getElementById('budget-limit-label');
 
     if (budget > 0) {
-      const pct   = Math.min((monthTotal / budget) * 100, 100);
-      const color = pct < 75 ? 'var(--green)' : pct < 100 ? 'var(--orange)' : 'var(--red)';
+      const pct       = Math.min((monthTotal / budget) * 100, 100);
+      const color     = pct < 75 ? '#4ade80' : pct < 100 ? 'var(--orange)' : 'var(--red)';
+      const remaining = budget - monthTotal;
       track.style.display = 'block';
       fill.style.width    = pct + '%';
+      const pill = document.getElementById('pct-pill');
+      pill.textContent = `${Math.round(pct)}% used`;
+      pill.style.display = 'block';
       fill.style.background = color;
       limLbl.textContent  = fmt(budget);
-      const remaining = budget - monthTotal;
-      hint.textContent = remaining >= 0
+      limLbl.style.color  = '#4ade80';
+      hint.textContent    = remaining >= 0
         ? `${fmt(remaining)} remaining · ${Math.round(pct)}% used`
         : `${fmt(Math.abs(remaining))} over budget`;
-      hint.style.color = remaining >= 0 ? 'var(--gray)' : 'var(--red)';
     } else {
       track.style.display = 'none';
       limLbl.textContent  = '—';
@@ -855,7 +891,7 @@
       const ci    = cats.indexOf(e.category);
       const color = CAT_COLORS[ci >= 0 ? ci % CAT_COLORS.length : 0];
       return `<li>
-        <div class="entry-dot" style="background:${color}"></div>
+        <div class="entry-accent" style="background:${color}"></div>
         <div class="entry-left">
           <div class="entry-desc">${e.description || e.category}</div>
           <div class="entry-meta">${e.category} · ${e.date}</div>
@@ -972,33 +1008,50 @@
     toast('Disconnected');
   }
 
-  function saveBudget() {
+  async function saveBudget() {
     const val = parseFloat(document.getElementById('budget-input').value);
     if (!val || val <= 0) { toast('Enter a valid budget amount'); return; }
-    localStorage.setItem(BUDGET_KEY, val);
-    render(cachedEntries());
-    toast('Budget saved');
+    if (!pat()) { toast('Connect GitHub first'); return; }
+    try {
+      const { settings, sha } = await ghGetSettings();
+      settings.budget = val;
+      await ghPutSettings(settings, sha, `Update monthly budget: $${val}`);
+      cacheSettings(settings);
+      render(cachedEntries());
+      toast('Budget saved to GitHub');
+    } catch (err) { toast('Error: ' + err.message); }
   }
 
-  function addCategory() {
+  async function addCategory() {
     const input = document.getElementById('cat-input');
     const name  = input.value.trim();
     if (!name) return;
     const cats = getCategories();
     if (cats.includes(name)) { toast('Category already exists'); return; }
-    cats.push(name);
-    localStorage.setItem(CATS_KEY, JSON.stringify(cats));
-    input.value = '';
-    renderCategoryList();
-    toast('Category added');
+    if (!pat()) { toast('Connect GitHub first'); return; }
+    try {
+      const { settings, sha } = await ghGetSettings();
+      settings.categories = [...(settings.categories || DEFAULT_CATS), name];
+      await ghPutSettings(settings, sha, `Add category: ${name}`);
+      cacheSettings(settings);
+      input.value = '';
+      renderCategoryList();
+      toast('Category added');
+    } catch (err) { toast('Error: ' + err.message); }
   }
 
-  function removeCategory(i) {
+  async function removeCategory(i) {
     const cats = getCategories();
     if (cats.length <= 1) { toast('Need at least one category'); return; }
-    cats.splice(i, 1);
-    localStorage.setItem(CATS_KEY, JSON.stringify(cats));
-    renderCategoryList();
+    if (!pat()) { toast('Connect GitHub first'); return; }
+    try {
+      const { settings, sha } = await ghGetSettings();
+      settings.categories = (settings.categories || DEFAULT_CATS).filter((_, idx) => idx !== i);
+      await ghPutSettings(settings, sha, `Remove category: ${cats[i]}`);
+      cacheSettings(settings);
+      renderCategoryList();
+      toast('Category removed');
+    } catch (err) { toast('Error: ' + err.message); }
   }
 
   function exportCSV() {
@@ -1145,6 +1198,20 @@
     };
 
     recognition.start();
+  }
+
+  // ── Service Worker ────────────────────────────────────────────────────────────
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const sw = reg.installing;
+        sw.addEventListener('statechange', () => {
+          if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+            window.location.reload();
+          }
+        });
+      });
+    });
   }
 
   // ── Init ──────────────────────────────────────────────────────────────────────
