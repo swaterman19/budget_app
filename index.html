@@ -23,17 +23,22 @@
       position: sticky;
       top: 0;
       z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    header h1 {
-      font-size: 20px;
-      font-weight: 700;
-    }
+    header div h1 { font-size: 20px; font-weight: 700; }
+    header div p  { font-size: 13px; color: #8e8e93; margin-top: 2px; }
 
-    header p {
-      font-size: 13px;
+    .btn-gear {
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
       color: #8e8e93;
-      margin-top: 2px;
+      padding: 4px;
+      line-height: 1;
     }
 
     .container {
@@ -59,12 +64,7 @@
       margin-bottom: 14px;
     }
 
-    .form-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
+    .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
     .form-row.single { display: block; }
 
     label {
@@ -94,7 +94,7 @@
     }
 
     .amount-wrap { flex: 1; }
-    .date-wrap { flex: 1; }
+    .date-wrap   { flex: 1; }
 
     .btn-add {
       width: 100%;
@@ -108,9 +108,25 @@
       cursor: pointer;
       margin-top: 4px;
       transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
-    .btn-add:active { background: #0062cc; }
+    .btn-add:disabled { background: #b0c8f0; cursor: default; }
+    .btn-add:not(:disabled):active { background: #0062cc; }
+
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .total-bar {
       display: flex;
@@ -119,23 +135,17 @@
       padding: 12px 0 4px;
     }
 
-    .total-bar span { font-size: 14px; color: #8e8e93; }
-
+    .total-bar span   { font-size: 14px; color: #8e8e93; }
     .total-bar strong { font-size: 22px; font-weight: 700; color: #1c1c1e; }
 
-    .btn-csv {
-      padding: 9px 16px;
-      background: #34c759;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
+    .sync-status {
+      font-size: 11px;
+      color: #8e8e93;
+      margin-top: 4px;
     }
 
-    .btn-csv:active { background: #28a745; }
+    .sync-status.error { color: #ff3b30; }
+    .sync-status.ok    { color: #34c759; }
 
     .entries-list { list-style: none; }
 
@@ -160,11 +170,7 @@
       max-width: 200px;
     }
 
-    .entry-meta {
-      font-size: 12px;
-      color: #8e8e93;
-      margin-top: 2px;
-    }
+    .entry-meta { font-size: 12px; color: #8e8e93; margin-top: 2px; }
 
     .entry-amount {
       font-size: 16px;
@@ -193,6 +199,68 @@
       font-size: 14px;
     }
 
+    /* Setup / Settings modal */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 100;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .overlay.hidden { display: none; }
+
+    .modal {
+      background: #fff;
+      border-radius: 20px 20px 0 0;
+      padding: 24px 20px 40px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .modal p  { font-size: 14px; color: #8e8e93; margin-bottom: 20px; line-height: 1.5; }
+
+    .modal label { color: #1c1c1e; font-size: 14px; margin-bottom: 6px; }
+
+    .modal input {
+      font-size: 14px;
+      font-family: monospace;
+      margin-bottom: 12px;
+    }
+
+    .modal a { color: #007aff; text-decoration: none; }
+
+    .btn-save {
+      width: 100%;
+      padding: 14px;
+      background: #007aff;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .btn-save:active { background: #0062cc; }
+
+    .btn-cancel {
+      width: 100%;
+      padding: 12px;
+      background: none;
+      color: #8e8e93;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+
+    /* Toast */
     .toast {
       position: fixed;
       bottom: 28px;
@@ -207,19 +275,42 @@
       transition: opacity 0.2s;
       pointer-events: none;
       white-space: nowrap;
+      z-index: 200;
     }
 
     .toast.show { opacity: 1; }
+
+    /* No-PAT banner */
+    .banner {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 14px;
+      margin-bottom: 16px;
+      cursor: pointer;
+    }
+
+    .banner strong { display: block; margin-bottom: 2px; }
+    .banner span   { color: #856404; }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>Spending Tracker</h1>
-  <p id="month-label"></p>
+  <div>
+    <h1>Spending Tracker</h1>
+    <p id="month-label"></p>
+  </div>
+  <button class="btn-gear" onclick="openSettings()" title="Settings">⚙️</button>
 </header>
 
 <div class="container">
+
+  <div id="no-pat-banner" class="banner hidden" onclick="openSettings()">
+    <strong>GitHub not connected</strong>
+    <span>Tap to enter your Personal Access Token →</span>
+  </div>
 
   <!-- Entry form -->
   <div class="card">
@@ -250,17 +341,20 @@
       <label for="desc">Description (optional)</label>
       <input type="text" id="desc" placeholder="e.g. Coffee, Uber, Netflix…">
     </div>
-    <button class="btn-add" onclick="addEntry()">Add Expense</button>
+    <button class="btn-add" id="btn-add" onclick="addEntry()">
+      <span class="spinner" id="add-spinner"></span>
+      <span id="btn-add-label">Add Expense</span>
+    </button>
   </div>
 
-  <!-- Summary + export -->
+  <!-- Summary -->
   <div class="card">
     <div class="total-bar">
       <div>
         <span>Total this month</span><br>
         <strong id="total">$0.00</strong>
+        <div class="sync-status" id="sync-status">Loading…</div>
       </div>
-      <button class="btn-csv" onclick="downloadCSV()">Export CSV</button>
     </div>
   </div>
 
@@ -268,35 +362,137 @@
   <div class="card">
     <h2>Recent Entries</h2>
     <ul class="entries-list" id="entries-list">
-      <li class="empty">No entries yet</li>
+      <li class="empty">Loading…</li>
     </ul>
   </div>
 
 </div>
 
+<!-- Settings / Setup modal -->
+<div class="overlay hidden" id="overlay">
+  <div class="modal">
+    <h2>GitHub Settings</h2>
+    <p>
+      Your expenses are saved to <strong>data/spending.csv</strong> in your GitHub repo.<br><br>
+      Create a token at <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens</a>
+      with <strong>repo</strong> scope (or <strong>Contents: Read &amp; Write</strong> for fine-grained tokens).
+    </p>
+    <label for="pat-input">Personal Access Token</label>
+    <input type="password" id="pat-input" placeholder="ghp_xxxxxxxxxxxx">
+    <button class="btn-save" onclick="savePAT()">Save &amp; Connect</button>
+    <button class="btn-cancel" id="modal-cancel" onclick="closeSettings()">Cancel</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-  const STORAGE_KEY = 'spending_entries';
+  const GITHUB_USER = 'swaterman19';
+  const GITHUB_REPO = 'budget_app';
+  const CSV_PATH    = 'data/spending.csv';
+  const CSV_HEADER  = 'ID,Date,Amount,Category,Description';
+  const API_BASE    = 'https://api.github.com';
+  const PAT_KEY     = 'gh_pat';
+  const CACHE_KEY   = 'spending_cache';
 
-  function load() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-    catch { return []; }
+  // ── GitHub API ──────────────────────────────────────────────────────────────
+
+  function pat() { return localStorage.getItem(PAT_KEY) || ''; }
+
+  async function ghGet() {
+    const res = await fetch(`${API_BASE}/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${CSV_PATH}`, {
+      headers: { Authorization: `token ${pat()}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (res.status === 404) return { content: CSV_HEADER + '\n', sha: null };
+    if (!res.ok) throw new Error(`GitHub ${res.status}`);
+    const data = await res.json();
+    const text = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+    return { content: text, sha: data.sha };
   }
 
-  function save(entries) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  async function ghPut(content, sha, message) {
+    const body = {
+      message,
+      content: btoa(unescape(encodeURIComponent(content))),
+      ...(sha ? { sha } : {})
+    };
+    const res = await fetch(`${API_BASE}/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${CSV_PATH}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `token ${pat()}`,
+        Accept: 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.message || `GitHub ${res.status}`); }
+    return res.json();
   }
 
-  function todayStr() {
-    return new Date().toISOString().slice(0, 10);
+  // ── CSV helpers ─────────────────────────────────────────────────────────────
+
+  function parseCSVLine(line) {
+    const result = []; let field = ''; let inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') { if (inQ && line[i+1] === '"') { field += '"'; i++; } else inQ = !inQ; }
+      else if (c === ',' && !inQ) { result.push(field); field = ''; }
+      else field += c;
+    }
+    result.push(field);
+    return result;
   }
 
-  function fmt(n) {
-    return '$' + parseFloat(n).toFixed(2);
+  function parseCSV(text) {
+    return text.trim().split('\n').slice(1)
+      .filter(l => l.trim())
+      .map(line => {
+        const p = parseCSVLine(line);
+        return { id: p[0], date: p[1], amount: parseFloat(p[2]), category: p[3], description: p[4] || '' };
+      });
   }
 
-  function addEntry() {
+  function entryToCSVRow(e) {
+    const desc = (e.description || '').replace(/"/g, '""');
+    return `${e.id},${e.date},${parseFloat(e.amount).toFixed(2)},${e.category},"${desc}"`;
+  }
+
+  function entriesToCSV(entries) {
+    return [CSV_HEADER, ...entries.map(entryToCSVRow)].join('\n') + '\n';
+  }
+
+  // ── Cache (show stale data while loading) ───────────────────────────────────
+
+  function cacheEntries(entries) {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(entries));
+  }
+
+  function cachedEntries() {
+    try { return JSON.parse(localStorage.getItem(CACHE_KEY)) || []; } catch { return []; }
+  }
+
+  // ── UI state ─────────────────────────────────────────────────────────────────
+
+  function setLoading(on) {
+    const btn = document.getElementById('btn-add');
+    const spinner = document.getElementById('add-spinner');
+    const label = document.getElementById('btn-add-label');
+    btn.disabled = on;
+    spinner.style.display = on ? 'block' : 'none';
+    label.textContent = on ? 'Saving…' : 'Add Expense';
+  }
+
+  function setSyncStatus(msg, type) {
+    const el = document.getElementById('sync-status');
+    el.textContent = msg;
+    el.className = 'sync-status' + (type ? ' ' + type : '');
+  }
+
+  // ── Core actions ─────────────────────────────────────────────────────────────
+
+  async function addEntry() {
+    if (!pat()) { toast('Set up GitHub token first'); openSettings(); return; }
+
     const amount = parseFloat(document.getElementById('amount').value);
     const date   = document.getElementById('date').value;
     const cat    = document.getElementById('category').value;
@@ -305,92 +501,151 @@
     if (!amount || amount <= 0) { toast('Enter a valid amount'); return; }
     if (!date) { toast('Pick a date'); return; }
 
-    const entries = load();
-    entries.unshift({ id: Date.now(), date, amount, category: cat, description: desc });
-    save(entries);
+    setLoading(true);
+    try {
+      const { content, sha } = await ghGet();
+      const entries = parseCSV(content);
+      const newEntry = { id: Date.now().toString(), date, amount, category: cat, description: desc };
+      entries.push(newEntry);
+      const newCSV = entriesToCSV(entries);
+      await ghPut(newCSV, sha, `Add expense: ${cat} $${amount.toFixed(2)}`);
 
-    document.getElementById('amount').value = '';
-    document.getElementById('desc').value = '';
-    document.getElementById('date').value = todayStr();
+      cacheEntries(entries);
+      render(entries);
 
-    render();
-    toast('Expense added');
+      document.getElementById('amount').value = '';
+      document.getElementById('desc').value = '';
+      document.getElementById('date').value = todayStr();
+
+      setSyncStatus('Synced to GitHub ✓', 'ok');
+      toast('Expense saved to GitHub');
+    } catch (err) {
+      console.error(err);
+      toast('Error: ' + err.message);
+      setSyncStatus('Sync failed', 'error');
+    } finally {
+      setLoading(false);
+    }
   }
 
-  function deleteEntry(id) {
-    const entries = load().filter(e => e.id !== id);
-    save(entries);
-    render();
+  async function deleteEntry(id) {
+    if (!pat()) { toast('Set up GitHub token first'); return; }
+    if (!confirm('Delete this entry?')) return;
+
+    setLoading(true);
+    try {
+      const { content, sha } = await ghGet();
+      const entries = parseCSV(content).filter(e => e.id !== id);
+      await ghPut(entriesToCSV(entries), sha, `Delete expense ${id}`);
+
+      cacheEntries(entries);
+      render(entries);
+      setSyncStatus('Synced to GitHub ✓', 'ok');
+      toast('Entry deleted');
+    } catch (err) {
+      toast('Error: ' + err.message);
+      setSyncStatus('Sync failed', 'error');
+    } finally {
+      setLoading(false);
+    }
   }
 
-  function render() {
-    const entries = load();
+  async function loadFromGitHub() {
+    if (!pat()) {
+      document.getElementById('no-pat-banner').classList.remove('hidden');
+      render(cachedEntries());
+      setSyncStatus('Not connected', 'error');
+      return;
+    }
+    setSyncStatus('Loading…');
+    render(cachedEntries());
+    try {
+      const { content } = await ghGet();
+      const entries = parseCSV(content);
+      cacheEntries(entries);
+      render(entries);
+      setSyncStatus('Synced to GitHub ✓', 'ok');
+    } catch (err) {
+      setSyncStatus('Could not load: ' + err.message, 'error');
+    }
+  }
+
+  // ── Render ──────────────────────────────────────────────────────────────────
+
+  function fmt(n) { return '$' + parseFloat(n).toFixed(2); }
+
+  function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+  function render(entries) {
     const now = new Date();
-    const ym = now.toISOString().slice(0, 7);
+    const ym  = now.toISOString().slice(0, 7);
 
-    // Month label
     document.getElementById('month-label').textContent =
       now.toLocaleString('default', { month: 'long', year: 'numeric' });
 
-    // Total this month
-    const total = entries
-      .filter(e => e.date.startsWith(ym))
-      .reduce((s, e) => s + parseFloat(e.amount), 0);
+    const total = [...entries]
+      .filter(e => e.date && e.date.startsWith(ym))
+      .reduce((s, e) => s + parseFloat(e.amount || 0), 0);
     document.getElementById('total').textContent = fmt(total);
 
-    // List
     const ul = document.getElementById('entries-list');
-    if (!entries.length) {
+    const sorted = [...entries].reverse();
+    if (!sorted.length) {
       ul.innerHTML = '<li class="empty">No entries yet</li>';
       return;
     }
 
-    ul.innerHTML = entries.slice(0, 50).map(e => `
+    ul.innerHTML = sorted.slice(0, 50).map(e => `
       <li>
         <div class="entry-left">
           <div class="entry-desc">${e.description || e.category}</div>
           <div class="entry-meta">${e.category} · ${e.date}</div>
         </div>
         <span class="entry-amount">${fmt(e.amount)}</span>
-        <button class="btn-del" onclick="deleteEntry(${e.id})" aria-label="Delete">×</button>
+        <button class="btn-del" onclick="deleteEntry('${e.id}')" aria-label="Delete">×</button>
       </li>
     `).join('');
   }
 
-  function downloadCSV() {
-    const entries = load();
-    if (!entries.length) { toast('No data to export'); return; }
+  // ── Settings modal ───────────────────────────────────────────────────────────
 
-    const header = 'Date,Amount,Category,Description';
-    const rows = entries.map(e =>
-      `${e.date},${parseFloat(e.amount).toFixed(2)},${e.category},"${(e.description || '').replace(/"/g, '""')}"`
-    );
-    const csv = [header, ...rows].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `spending_${new Date().toISOString().slice(0,10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast('CSV downloaded');
+  function openSettings() {
+    document.getElementById('pat-input').value = pat();
+    document.getElementById('overlay').classList.remove('hidden');
+    const hasPAT = !!pat();
+    document.getElementById('modal-cancel').style.display = hasPAT ? 'block' : 'none';
   }
+
+  function closeSettings() {
+    document.getElementById('overlay').classList.add('hidden');
+  }
+
+  function savePAT() {
+    const val = document.getElementById('pat-input').value.trim();
+    if (!val) { toast('Enter a token'); return; }
+    localStorage.setItem(PAT_KEY, val);
+    document.getElementById('no-pat-banner').classList.add('hidden');
+    closeSettings();
+    toast('Token saved — loading data…');
+    loadFromGitHub();
+  }
+
+  // ── Toast ────────────────────────────────────────────────────────────────────
 
   function toast(msg) {
     const el = document.getElementById('toast');
     el.textContent = msg;
     el.classList.add('show');
-    setTimeout(() => el.classList.remove('show'), 2000);
+    setTimeout(() => el.classList.remove('show'), 2500);
   }
 
-  // Init
-  document.getElementById('date').value = todayStr();
-  render();
+  // ── Init ─────────────────────────────────────────────────────────────────────
 
-  // Enter key submits
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Enter') addEntry();
-  });
+  document.getElementById('date').value = todayStr();
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') addEntry(); });
+
+  if (!pat()) openSettings();
+  else loadFromGitHub();
 </script>
 
 </body>
