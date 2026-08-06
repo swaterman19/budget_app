@@ -937,13 +937,16 @@
 
     const cats      = getCategories();
     const container = document.getElementById('report-cats');
-    if (!sorted.length) { container.innerHTML = '<div class="empty">No data this month</div>'; return; }
+    if (!sorted.length) {
+      container.innerHTML = '<div class="empty">No data this month</div>';
+      return;
+    }
 
     container.innerHTML = sorted.map(([cat, amt]) => {
       const pct   = total > 0 ? (amt / total * 100) : 0;
       const ci    = cats.indexOf(cat);
       const color = CAT_COLORS[ci >= 0 ? ci % CAT_COLORS.length : 0];
-      return `<div class="report-item">
+      return `<div class="report-item" style="cursor:pointer" onclick="showCatDrilldown('${cat.replace(/'/g,"\\'")}')">
         <div class="report-label">
           <span>${cat}</span>
           <span>${fmt(amt)} · ${Math.round(pct)}%</span>
@@ -953,6 +956,36 @@
         </div>
       </div>`;
     }).join('');
+  }
+
+  function showCatDrilldown(cat) {
+    const entries     = cachedEntries();
+    const monthEntries = entries.filter(e => e.date && e.date.startsWith(reportMonth) && e.category === cat);
+    const cats        = getCategories();
+    const ci          = cats.indexOf(cat);
+    const color       = CAT_COLORS[ci >= 0 ? ci % CAT_COLORS.length : 0];
+    const total       = monthEntries.reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+    const container   = document.getElementById('report-cats');
+
+    const rows = monthEntries.slice().reverse().map(e => {
+      const dateStr = new Date(e.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      return `<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:0.5px solid #f2f2f7;">
+        <div style="width:3px;height:34px;background:${color};flex-shrink:0;border-radius:0"></div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.description || cat}</div>
+          <div style="font-size:12px;color:#8e8e93;margin-top:2px">${dateStr}</div>
+        </div>
+        <span style="font-size:14px;font-weight:600;white-space:nowrap">${fmt(e.amount)}</span>
+      </div>`;
+    }).join('');
+
+    container.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <button onclick="renderReports(cachedEntries())" style="background:none;border:none;font-size:20px;cursor:pointer;color:#8e8e93;padding:0;line-height:1">‹</button>
+        <span style="font-size:15px;font-weight:700;flex:1">${cat}</span>
+        <span style="font-size:14px;font-weight:600;color:#1c1c1e">${fmt(total)}</span>
+      </div>
+      ${rows || '<div class="empty">No entries</div>'}`;
   }
 
   // ── Render: settings tab ──────────────────────────────────────────────────────
